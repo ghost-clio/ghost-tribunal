@@ -1,10 +1,6 @@
 // Ghost Tribunal — Dashboard
 
-// Backend API — empty string = same origin (local), or set to VPS URL
-// Backend: VPS when on GitHub Pages, same-origin when local
-const API_BASE = window.location.hostname.includes('github.io')
-  ? 'http://213.111.156.115:3000'
-  : '';
+const API_BASE = '';
 
 let connectedWallet = null;
 let freeRunUsed = false;
@@ -202,6 +198,10 @@ async function submitToken() {
       body: JSON.stringify(payload),
     });
 
+    if (!resp.ok && resp.headers.get('content-type')?.includes('text/html')) {
+      throw new Error('NO_BACKEND');
+    }
+
     const data = await resp.json();
 
     if (resp.status === 402) {
@@ -240,7 +240,11 @@ async function submitToken() {
     }
   } catch(e) {
     status.className = 'submit-status error';
-    status.textContent = `Network error: ${e.message}`;
+    if (e.message === 'NO_BACKEND' || e.message?.includes('Unexpected token')) {
+      status.innerHTML = '🔧 Live tribunal requires a running backend.<br><code>git clone ghost-clio/ghost-tribunal && python tribunal.py</code><br>Or view the demo sessions below ↓';
+    } else {
+      status.textContent = `Error: ${e.message}`;
+    }
   }
 
   btn.disabled = false;
