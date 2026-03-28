@@ -1,141 +1,155 @@
 # 👻 Ghost Tribunal
 
-**An AI Agent Council That Debates, Votes, and Trades Narratives On-Chain**
+**An AI Agent Council That Debates, Votes, and Trades On-Chain**
 
-> Four AI agents. Four perspectives. One verdict — recorded forever on X Layer.
+[![Try it live](https://img.shields.io/badge/🔗_Try_It_Live-ghost--tribunal-blueviolet?style=for-the-badge)](https://ghost-clio.github.io/ghost-tribunal)
+[![X Layer](https://img.shields.io/badge/X_Layer-Mainnet-blue?style=flat-square)](https://www.okx.com/web3/explorer/xlayer)
+[![License: MIT](https://img.shields.io/badge/License-MIT-green?style=flat-square)](LICENSE)
+
+> Four AI agents with clashing personalities debate every token. Their verdicts are posted as immutable on-chain records. When 3 out of 4 agree — they execute.
+>
+> No black boxes. No hidden logic. Every decision public, permanent, and verifiable.
+
+**[→ Live Demo](https://ghost-clio.github.io/ghost-tribunal)** · **[→ On-Chain Proof](https://www.okx.com/web3/explorer/xlayer/tx/0x5f59121eb7cfea5ddc81d28e903639eafa6e3ec6f451351ffa071ff241759d7a)** · **[→ Demo Video](https://github.com/ghost-clio/ghost-tribunal/releases/download/v1.0.0/ghost-tribunal.mp4)**
 
 ---
 
-## The Problem
+## Why This Exists
 
-AI trading bots are black boxes. One model, one perspective, one hidden decision. You never know why it bought, why it passed, or what it missed.
+AI trading bots are black boxes. One model, one perspective, one hidden decision. You never know *why* it bought, *why* it passed, or what it missed.
 
-## The Solution
+Ghost Tribunal replaces the black box with a **public debate**:
 
-Ghost Tribunal replaces the black box with a **public debate**. Four AI agents with distinct personalities analyze every token from different angles. Their verdicts are posted as **immutable on-chain records** on X Layer. When 3 out of 4 agree, the tribunal executes.
+- 4 AI agents argue from radically different perspectives
+- Every verdict is written to X Layer as an immutable memo transaction
+- Every decision is auditable — by anyone, forever
+- Consensus (3/4) triggers execution via OKX DEX Aggregator
 
-Every decision is transparent. Every vote costs something. Every trade has a public audit trail.
+The result: an AI trading system where **trust is verifiable, not assumed**.
 
-## The Agents
+---
 
-| Agent | Role | Personality |
-|-------|------|-------------|
-| 🎰 **The Degen** | Momentum & hype | Aggressive, apes first, speaks in crypto slang |
-| 🛡️ **The Sentinel** | Security & risk | Paranoid, assumes everything is a rug |
-| 🔮 **The Oracle** | Narrative & culture | Reads cultural currents, checks viral velocity |
-| 📊 **The Quant** | Data & numbers | Cold, only cares about the math |
+## The Four Agents
 
-### Why Multi-Agent?
+| | Agent | Perspective | What They Catch |
+|---|-------|------------|-----------------|
+| 🎰 | **The Degen** | Momentum & hype | Trends the Quant would ignore |
+| 🛡️ | **The Sentinel** | Security & risk | Rugs the Degen would ape into |
+| 🔮 | **The Oracle** | Narrative & culture | Stories the Quant can't quantify |
+| 📊 | **The Quant** | Data & numbers | Value the Oracle would overlook |
 
-Single-agent trading bots have one perspective and one failure mode. Ghost Tribunal's four agents catch what any individual would miss:
+Each agent has a distinct system prompt, bias, and analysis style. They don't collaborate — they **debate**. The Sentinel is paranoid by design. The Degen is impatient. The Oracle speaks in cultural currents. The Quant only sees numbers.
 
-- The Degen spots momentum the Quant would ignore
-- The Sentinel catches rugs the Degen would ape into
-- The Oracle identifies narratives the Quant can't quantify
-- The Quant finds value the Oracle would overlook
+**The disagreement is the feature.**
 
-**The debate IS the alpha.**
+When The Sentinel approves a BUY, it carries weight — because everyone knows how hard it is to convince.
+
+---
 
 ## How It Works
 
 ```
-Trend Detected
-    → Token Matched on X Layer
-        → Security Scan (OKX OnchainOS)
-            → 4 Agents Analyze Sequentially
-                → Verdicts Posted On-Chain (memo txs)
-                    → Consensus Vote (3/4 required)
-                        → Trade Execution (OKX DEX Aggregator)
+Token Address Submitted
+    ↓
+Token Data Fetched (OKX OnchainOS — Market, Security, Token APIs)
+    ↓
+4 Agents Analyze Independently
+    ↓
+Each Verdict Posted On-Chain (X Layer memo transaction)
+    ↓
+Consensus Check (≥3 of 4 = BUY)
+    ↓
+Trade Execution (OKX DEX Aggregator, 500+ liquidity sources)
 ```
 
-### On-Chain Verdicts
+### Real On-Chain Verdict
 
-Every agent verdict is encoded as a JSON memo in a self-transfer transaction on X Layer:
+Every verdict is a JSON memo embedded in a self-transfer on X Layer. Here's a real one from our xETH session:
 
 ```json
 {
   "tribunal": "ghost",
   "agent": "The Sentinel",
-  "token": "0x...",
-  "verdict": "DANGER",
-  "reasoning": "Unverified contract. Top 10 hold 42%. Risk: 8/10",
+  "token": "0x5a77f1443d16ee5761d310e38b7069f7dfdcd8d8",
+  "verdict": "BUY",
+  "reasoning": "Contract verified. Top 10 hold 2.8% — healthy distribution. $4M liquidity relative to $7.8M mcap is strong. No honeypot flags. Risk: 3/10",
   "ts": 1711584000
 }
 ```
 
-These are **permanent, verifiable records** — anyone can decode the transaction data on [X Layer Explorer](https://www.okx.com/web3/explorer/xlayer) and see exactly what each agent thought and why.
+**Verify it yourself:** [View on X Layer Explorer →](https://www.okx.com/web3/explorer/xlayer/tx/0x5f59121eb7cfea5ddc81d28e903639eafa6e3ec6f451351ffa071ff241759d7a)
 
-## x402 Payment Integration
-
-Ghost Tribunal uses the [x402 protocol](https://x402.org) for **self-sustaining economics**:
-
-- Users submit tokens for review → pay a micro-fee in USDC via x402
-- Payment is verified through the [CodeNut facilitator](https://facilitator.codenut.ai) on X Layer
-- Revenue covers AI inference costs (OpenRouter API)
-- No accounts, no subscriptions — just `HTTP 402 → sign → pay → results`
-
-This creates a **flywheel**: usage funds AI costs, which powers more sessions, which generates more on-chain data. The tribunal pays for itself.
-
-```
-Client: POST /api/submit
-Server: 402 Payment Required (USDC on X Layer)
-Client: Signs ERC-3009 authorization
-Client: POST /api/submit + X-PAYMENT header
-Server: Verifies → Runs tribunal → Returns results
-```
-
-Set `TRIBUNAL_FREE_MODE=1` for demos and testing.
+---
 
 ## Live Dashboard
 
-**🔗 [ghost-clio.github.io/ghost-tribunal](https://ghost-clio.github.io/ghost-tribunal)** — paste any X Layer token address and get real AI verdicts.
+**[→ ghost-clio.github.io/ghost-tribunal](https://ghost-clio.github.io/ghost-tribunal)**
 
-The dashboard shows tribunal sessions with a dark terminal aesthetic:
+Paste any X Layer token contract address. Get real AI verdicts in ~20 seconds.
 
-- **Submit tokens** for tribunal review directly from the UI
-- **1 free run per connected wallet** — then $0.01/session via x402
-- **Agent verdicts** with reasoning — see what each agent thought
-- **Consensus results** (BUY / PASS) with vote counts
-- **On-chain links** to X Layer Explorer for every verdict
-- **Agent stats** — track each agent's bullish rate over time
-- **Live animated progress** — watch each agent deliberate in real-time
+- **Connect wallet** — 1 free tribunal session per wallet
+- **Watch the deliberation** — animated progress as each agent analyzes
+- **Read the reasoning** — every agent explains their verdict
+- **Check consensus** — see if the tribunal would buy
+- **Verify on-chain** — every past verdict links to X Layer Explorer
 
-```bash
-python dashboard.py  # → http://localhost:3000
+No sign-up. No API key. Just paste an address and summon the tribunal.
+
+---
+
+## x402: Self-Sustaining Economics
+
+Ghost Tribunal uses the [x402 protocol](https://x402.org) to pay for itself:
+
 ```
+First session  →  FREE (per connected wallet)
+Every session after  →  $0.01 USDC via x402
+```
+
+The flow:
+
+1. Client submits a token → server responds `402 Payment Required`
+2. Client signs a USDC authorization (ERC-3009) in their wallet
+3. Payment verified through [CodeNut facilitator](https://facilitator.codenut.ai) on X Layer
+4. Tribunal runs → verdicts returned
+
+No accounts. No subscriptions. No API keys. Just `402 → sign → pay → results`.
+
+**Why it matters:** Each session costs ~$0.0001 in gas + $0 in AI inference (free-tier model). At $0.01/session, the tribunal is profitable from session #1 — a self-sustaining AI agent that funds its own compute.
+
+---
 
 ## OKX OnchainOS Integration
 
-| OnchainOS API | Usage in Ghost Tribunal |
-|---------------|------------------------|
-| **Token API** | Search and discover tokens on X Layer |
-| **Security API** | Scan for rugs, honeypots, dev wallet concentration |
-| **Market API** | Real-time price, volume, and liquidity data |
-| **DEX Aggregator** | Execute consensus swaps across 500+ sources |
-| **x402 Payments** | Pay-per-session micropayments for AI inference |
+| OnchainOS Capability | How Ghost Tribunal Uses It |
+|---------------------|---------------------------|
+| **Token API** | Discover and identify tokens on X Layer |
+| **Security API** | Scan for honeypots, dev concentration, contract risks |
+| **Market API** | Real-time price, volume, liquidity, and holder data |
+| **DEX Aggregator** | Execute consensus trades across 500+ liquidity sources |
+| **x402 Payments** | Per-session micropayments — users pay, tribunal runs |
+
+The tribunal doesn't just *read* on-chain data — it **writes** to the chain. Every verdict becomes a permanent, auditable record that anyone can verify.
+
+---
 
 ## Quick Start
 
 ```bash
-# Clone
 git clone https://github.com/ghost-clio/ghost-tribunal.git
 cd ghost-tribunal
 
-# Install deps
 pip install -r requirements.txt
-
-# Configure
 cp .env.example .env
-# Edit .env: add OPENROUTER_API_KEY
+# Add your OPENROUTER_API_KEY and TRIBUNAL_PRIVATE_KEY
 
-# Run a single tribunal session
-python tribunal.py "TokenName" "0xTokenAddress"
+# Run a tribunal session on any X Layer token
+python tribunal.py "WOKB" "0xe538905cf8410324e03a5a23c1c177a474d59b2b"
 
-# Run the live dashboard
-python dashboard.py
-# → http://localhost:3000
+# Start the dashboard
+python dashboard.py  # → http://localhost:3000
 
-# Run the trend watcher (continuous monitoring)
+# Auto-monitor trending tokens
 python watcher.py
 ```
 
@@ -143,54 +157,62 @@ python watcher.py
 
 | Variable | Required | Description |
 |----------|----------|-------------|
-| `OPENROUTER_API_KEY` | ✅ | AI inference (Nemotron 120B via OpenRouter) |
-| `TRIBUNAL_PRIVATE_KEY` | ✅ | Wallet for on-chain verdict txs |
+| `OPENROUTER_API_KEY` | ✅ | AI model access via [OpenRouter](https://openrouter.ai) |
+| `TRIBUNAL_PRIVATE_KEY` | ✅ | Wallet for posting verdict transactions |
 | `XLAYER_NETWORK` | — | `mainnet` (default) or `testnet` |
-| `TRIBUNAL_FREE_MODE` | — | Set to `1` to skip x402 payment |
-| `AGENT_MODEL` | — | Default: `nvidia/nemotron-3-super-120b-a12b` |
-| `DISCORD_WEBHOOK` | — | Post results to Discord |
-| `OKX_API_KEY` | — | OnchainOS API access |
+| `AGENT_MODEL` | — | Default: `nvidia/nemotron-3-super-120b-a12b:free` |
+| `TRIBUNAL_FREE_MODE` | — | `1` = skip x402 payment check |
+| `DISCORD_WEBHOOK` | — | Post verdicts to Discord |
+
+---
 
 ## Architecture
 
 ```
 ghost-tribunal/
-├── tribunal.py      # Core orchestrator — runs 4 agents, posts verdicts on-chain
-├── agents.py        # Agent definitions — personalities, prompts, verdict parsing
-├── xlayer.py        # X Layer ops — on-chain txs, token search, security scan, DEX
-├── x402_gate.py     # x402 payment gate — HTTP 402 flow via CodeNut facilitator
-├── watcher.py       # Trend detection — X trending → token matching → auto-tribunal
-├── dashboard.py     # Web dashboard — submit tokens, view sessions, agent stats
-├── dashboard/       # Frontend — dark terminal UI, auto-refresh
+├── tribunal.py               # Orchestrator — queries agents, posts on-chain, checks consensus
+├── agents.py                 # The Four — personalities, prompts, verdict parsing
+├── xlayer.py                 # X Layer — on-chain txs, onchainos CLI, security scans
+├── x402_gate.py              # Payment — HTTP 402 flow via CodeNut facilitator
+├── watcher.py                # Trend detection — finds tokens, triggers tribunal
+├── config.py                 # Configuration from .env
+├── dashboard.py              # Local web server for self-hosted dashboard
+├── dashboard/                # Frontend UI
 │   ├── index.html
 │   └── static/
 │       ├── style.css
 │       └── app.js
-├── config.py        # All configuration, reads from .env
-└── supabase/
-    └── functions/
-        └── tribunal-session/  # Serverless API — powers the live dashboard
+├── docs/                     # GitHub Pages — live public dashboard
+└── supabase/functions/
+    └── tribunal-session/     # Serverless API powering the live demo
 ```
 
 ## Tech Stack
 
-- **Python** — async orchestration with aiohttp
-- **X Layer** (Chain ID 196) — on-chain verdict records
-- **OKX OnchainOS** — token discovery, security scanning, DEX aggregation
-- **x402 + CodeNut** — pay-per-session micropayments
-- **Nemotron 120B** (via OpenRouter) — AI agent inference (~$0/session (free model))
-- **web3.py** — on-chain transaction posting
+| Layer | Technology |
+|-------|-----------|
+| **AI Inference** | Nemotron 120B (MoE, 12B active) via OpenRouter — $0/session |
+| **Blockchain** | X Layer mainnet (Chain ID 196) |
+| **On-Chain Ops** | OKX OnchainOS (Token, Security, Market, DEX APIs) |
+| **Payments** | x402 protocol + CodeNut facilitator |
+| **Frontend** | Static HTML/CSS/JS on GitHub Pages |
+| **Backend** | Supabase Edge Functions (Deno) + Python (aiohttp) |
+| **Smart Contracts** | Self-transfer memo transactions (verdict records) |
+
+---
 
 ## Cost Economics
 
 | Component | Cost per Session |
 |-----------|-----------------|
-| AI inference (4 agents × Nemotron 120B) | $0 (free tier) |
-| On-chain verdicts (4 memo txs) | ~$0.0001 gas |
-| x402 fee charged to user | $0.01 |
-| **Net margin per session** | **~$0.01** |
+| AI inference (4 × Nemotron 120B) | $0.00 |
+| On-chain verdicts (4 memo txs) | ~$0.0001 |
+| x402 revenue per session | +$0.01 |
+| **Net margin** | **~$0.01** |
 
-The system is profitable from session #1.
+Profitable from session #1. No VC funding required.
+
+---
 
 ## License
 
