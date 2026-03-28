@@ -1,6 +1,7 @@
 // Ghost Tribunal — Dashboard
 
-const API_BASE = '';
+const TRIBUNAL_API = 'https://mfxnfwvnveyinhtghwbl.supabase.co/functions/v1/tribunal-session';
+const SUPABASE_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1meG5md3ZudmV5aW5odGdod2JsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ1MDY1OTYsImV4cCI6MjA5MDA4MjU5Nn0.GWANco-2DlF0V4ZZA7gu0Rp3UnjhcFmuS2f5Xjnmmtg';
 
 let connectedWallet = null;
 let freeRunUsed = false;
@@ -121,14 +122,7 @@ function escHtml(s) {
 
 async function loadSessions() {
   const el = document.getElementById('sessions');
-  let sessions = null;
-  try {
-    const resp = await fetch(API_BASE + '/api/sessions');
-    if (resp.ok) sessions = await resp.json();
-  } catch(e) { /* no backend */ }
-
-  // Fallback to demo data (GitHub Pages, no backend)
-  if (!sessions && typeof DEMO_SESSIONS !== 'undefined') sessions = DEMO_SESSIONS;
+  let sessions = (typeof DEMO_SESSIONS !== 'undefined') ? DEMO_SESSIONS : [];
   if (!sessions || !sessions.length) {
     el.innerHTML = '<div class="empty-state"><div class="empty-icon">👻</div><p>No tribunal sessions yet</p><p class="empty-sub">Submit a token above or run <code>python tribunal.py</code></p></div>';
     return;
@@ -137,12 +131,7 @@ async function loadSessions() {
 }
 
 async function loadStats() {
-  let stats = null;
-  try {
-    const resp = await fetch(API_BASE + '/api/stats');
-    if (resp.ok) stats = await resp.json();
-  } catch(e) { /* no backend */ }
-  if (!stats && typeof DEMO_STATS !== 'undefined') stats = DEMO_STATS;
+  let stats = (typeof DEMO_STATS !== 'undefined') ? DEMO_STATS : null;
   if (!stats) return;
 
     document.getElementById('stat-total').textContent = stats.total_sessions;
@@ -192,42 +181,28 @@ async function submitToken() {
     };
     if (connectedWallet) payload.wallet = connectedWallet;
 
-    const resp = await fetch(API_BASE + '/api/submit', {
+    const resp = await fetch(TRIBUNAL_API, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${SUPABASE_ANON}`,
+      },
       body: JSON.stringify(payload),
     });
 
-    if (!resp.ok && resp.headers.get('content-type')?.includes('text/html')) {
-      throw new Error('NO_BACKEND');
-    }
-
     const data = await resp.json();
+    if (data.error) throw new Error(data.error);
 
-    if (resp.status === 402) {
-      // Payment required — free run used up
-      status.className = 'submit-status payment';
-      status.innerHTML = '💰 Free run used! Pay <strong>$0.01 USDC</strong> per session via x402 to continue. <a href="https://x402.org" target="_blank">Learn about x402 →</a>';
-      if (connectedWallet) {
-        freeRunUsed = true;
-        localStorage.setItem('gt_free_' + connectedWallet.toLowerCase(), '1');
-        document.getElementById('free-badge').textContent = '💰 $0.01/session';
-        document.getElementById('free-badge').className = 'free-badge paid';
-      }
-    } else if (resp.ok) {
+    if (resp.ok && data.verdicts) {
       const verdict = data.consensus
         ? `✅ CONSENSUS BUY (${data.buy_votes}/4)`
         : `❌ NO CONSENSUS (${data.buy_votes}/4 BUY)`;
-      const txs = (data.tx_hashes || []).length;
       status.className = 'submit-status success';
-      status.textContent = `${verdict} — ${txs} verdicts posted on-chain`;
-      
-      // Mark free run as used
-      if (connectedWallet && !freeRunUsed) {
-        freeRunUsed = true;
-        localStorage.setItem('gt_free_' + connectedWallet.toLowerCase(), '1');
-        document.getElementById('free-badge').textContent = '💰 $0.01/session';
-        document.getElementById('free-badge').className = 'free-badge paid';
+      status.textContent = verdict;
+
+      // Add this session to the page
+      if (typeof DEMO_SESSIONS !== 'undefined') {
+        DEMO_SESSIONS.unshift(data);
       }
       
       addrEl.value = '';
@@ -240,11 +215,7 @@ async function submitToken() {
     }
   } catch(e) {
     status.className = 'submit-status error';
-    if (e.message === 'NO_BACKEND' || e.message?.includes('Unexpected token')) {
-      status.innerHTML = '🔧 Live tribunal requires a running backend.<br><code>git clone ghost-clio/ghost-tribunal && python tribunal.py</code><br>Or view the demo sessions below ↓';
-    } else {
-      status.textContent = `Error: ${e.message}`;
-    }
+    status.textContent = `Error: ${e.message}`;
   }
 
   btn.disabled = false;
