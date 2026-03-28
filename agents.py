@@ -99,6 +99,8 @@ def get_agent_prompt(agent_id: str, token_name: str, token_data: dict, trend_inf
 
 def parse_verdict(response: str) -> str:
     """Extract BUY/PASS/FADE/DANGER/WAIT/SHORT from agent response."""
+    if not response:
+        return "PASS"
     response_upper = response.upper()
     for verdict in ["BUY", "DANGER", "FADE", "SHORT", "WAIT", "PASS"]:
         if verdict in response_upper:

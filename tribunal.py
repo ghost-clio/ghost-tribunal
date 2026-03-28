@@ -92,11 +92,18 @@ async def query_agent(
         log.error(f"Agent {agent_id} error: {e}")
         return {"agent": agent_id, "verdict": "PASS", "reasoning": str(e), "error": True}
 
-    # Parse OpenRouter response
+    # Parse OpenRouter response (handle thinking models that put text in reasoning_details)
     text = ""
     choices = data.get("choices", [])
     if choices:
-        text = choices[0].get("message", {}).get("content", "")
+        msg = choices[0].get("message", {})
+        text = msg.get("content") or ""
+        # Thinking models (nemotron, etc) put reasoning in reasoning_details
+        if not text and msg.get("reasoning_details"):
+            for detail in msg["reasoning_details"]:
+                if detail.get("text"):
+                    text = detail["text"]
+                    break
 
     verdict = parse_verdict(text)
 
@@ -136,12 +143,19 @@ async def run_tribunal(
         token_data["security"] = security
         log.info(f"Security scan complete")
 
-    # Query all agents in parallel
-    tasks = [
-        query_agent(session, agent_id, token_name, token_data, trend_info)
-        for agent_id in AGENTS
-    ]
-    verdicts = await asyncio.gather(*tasks)
+    # Query agents sequentially with retry (avoids free-tier rate limits)
+    verdicts = []
+    for agent_id in AGENTS:
+        for attempt in range(3):
+            v = await query_agent(session, agent_id, token_name, token_data, trend_info)
+            if not v.get("error"):
+                break
+            if attempt < 2:
+                wait = 3 * (attempt + 1)
+                log.info(f"  Retrying {agent_id} in {wait}s...")
+                await asyncio.sleep(wait)
+        verdicts.append(v)
+        await asyncio.sleep(2)  # stagger between agents
 
     # Display results
     buy_votes = 0
@@ -155,7 +169,7 @@ async def run_tribunal(
 
         icon = "✅" if is_buy else "❌" if verdict_str in ("DANGER", "FADE", "SHORT") else "⏸️"
         log.info(f"  {v.get('emoji', '?')} {v.get('name', v['agent'])}: {icon} {verdict_str}")
-        log.info(f"     {v['reasoning'][:150]}")
+        log.info(f"     {(v.get('reasoning') or 'No reasoning provided')[:150]}")
 
         results.append(v)
 
@@ -170,7 +184,7 @@ async def run_tribunal(
             v.get("name", v["agent"]),
             token_address,
             v["verdict"],
-            v["reasoning"][:200],
+            (v.get("reasoning") or "No reasoning")[:200],
         )
         if tx_hash:
             tx_hashes.append(tx_hash)
@@ -190,7 +204,7 @@ async def run_tribunal(
         "token_data": {k: v for k, v in token_data.items() if k != "security"},
         "trend_info": trend_info,
         "verdicts": [
-            {"agent": v["agent"], "verdict": v["verdict"], "reasoning": v["reasoning"][:300]}
+            {"agent": v["agent"], "verdict": v["verdict"], "reasoning": (v.get("reasoning") or "No reasoning")[:300]}
             for v in results
         ],
         "consensus": consensus,
@@ -400,7 +414,7 @@ async def _run_offline_demo():
     tx_hashes = []
     for v in demo_verdicts:
         tx_hash = await post_verdict_onchain(
-            v["name"], token_address, v["verdict"], v["reasoning"][:200],
+            v["name"], token_address, v["verdict"], (v.get("reasoning") or "No reasoning")[:200],
         )
         if tx_hash:
             tx_hashes.append(tx_hash)

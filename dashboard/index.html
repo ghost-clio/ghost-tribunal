@@ -41,11 +41,23 @@
         <span class="submit-icon">⚡</span>
         <span>Submit a token for tribunal review</span>
       </div>
+
+      <div class="wallet-bar" id="wallet-bar">
+        <button id="connect-btn" class="connect-btn" onclick="connectWallet()">🔗 Connect Wallet</button>
+        <div id="wallet-info" class="wallet-info" style="display:none">
+          <span id="wallet-addr" class="wallet-addr"></span>
+          <span id="free-badge" class="free-badge">🎁 1 FREE RUN</span>
+        </div>
+      </div>
+
       <div class="submit-inner">
         <input type="text" id="token-input" placeholder="Token contract address (X Layer)" spellcheck="false" />
         <input type="text" id="name-input" placeholder="Token name" spellcheck="false" />
         <input type="text" id="context-input" placeholder="Context (optional)" spellcheck="false" />
-        <button id="submit-btn" onclick="submitToken()">SUMMON</button>
+        <button id="submit-btn" onclick="submitToken()">SUMMON THE TRIBUNAL</button>
+      </div>
+      <div class="pricing-note" id="pricing-note">
+        <span>💰 $0.01 USDC per session via x402 · <strong>First run FREE</strong> with connected wallet</span>
       </div>
       <div id="submit-status" class="submit-status"></div>
     </div>

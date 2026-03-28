@@ -1,5 +1,54 @@
 // Ghost Tribunal — Dashboard
 
+let connectedWallet = null;
+let freeRunUsed = false;
+
+async function connectWallet() {
+  if (!window.ethereum) {
+    alert('Install MetaMask or an EVM wallet to connect');
+    return;
+  }
+  try {
+    const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
+    if (accounts.length > 0) {
+      connectedWallet = accounts[0];
+      document.getElementById('connect-btn').style.display = 'none';
+      document.getElementById('wallet-info').style.display = 'flex';
+      document.getElementById('wallet-addr').textContent =
+        connectedWallet.slice(0, 6) + '...' + connectedWallet.slice(-4);
+      
+      // Check if free run already used (stored locally)
+      const used = localStorage.getItem('gt_free_' + connectedWallet.toLowerCase());
+      if (used) {
+        freeRunUsed = true;
+        document.getElementById('free-badge').textContent = '💰 $0.01/session';
+        document.getElementById('free-badge').className = 'free-badge paid';
+      }
+    }
+  } catch (e) {
+    console.error('Wallet connect failed:', e);
+  }
+}
+
+// Auto-reconnect if previously connected
+if (window.ethereum) {
+  window.ethereum.request({ method: 'eth_accounts' }).then(accounts => {
+    if (accounts.length > 0) {
+      connectedWallet = accounts[0];
+      document.getElementById('connect-btn').style.display = 'none';
+      document.getElementById('wallet-info').style.display = 'flex';
+      document.getElementById('wallet-addr').textContent =
+        connectedWallet.slice(0, 6) + '...' + connectedWallet.slice(-4);
+      const used = localStorage.getItem('gt_free_' + connectedWallet.toLowerCase());
+      if (used) {
+        freeRunUsed = true;
+        document.getElementById('free-badge').textContent = '💰 $0.01/session';
+        document.getElementById('free-badge').className = 'free-badge paid';
+      }
+    }
+  });
+}
+
 const AGENTS = {
   degen:   { name: 'The Degen',    emoji: '🎰' },
   sentinel:{ name: 'The Sentinel', emoji: '🛡️' },
@@ -134,25 +183,47 @@ async function submitToken() {
   status.textContent = 'The tribunal is deliberating...';
 
   try {
+    const payload = {
+      address: address,
+      name: nameEl.value.trim(),
+      context: ctxEl.value.trim(),
+    };
+    if (connectedWallet) payload.wallet = connectedWallet;
+
     const resp = await fetch('/api/submit', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        address: address,
-        name: nameEl.value.trim(),
-        context: ctxEl.value.trim(),
-      }),
+      body: JSON.stringify(payload),
     });
 
     const data = await resp.json();
 
-    if (resp.ok) {
+    if (resp.status === 402) {
+      // Payment required — free run used up
+      status.className = 'submit-status payment';
+      status.innerHTML = '💰 Free run used! Pay <strong>$0.01 USDC</strong> per session via x402 to continue. <a href="https://x402.org" target="_blank">Learn about x402 →</a>';
+      if (connectedWallet) {
+        freeRunUsed = true;
+        localStorage.setItem('gt_free_' + connectedWallet.toLowerCase(), '1');
+        document.getElementById('free-badge').textContent = '💰 $0.01/session';
+        document.getElementById('free-badge').className = 'free-badge paid';
+      }
+    } else if (resp.ok) {
       const verdict = data.consensus
         ? `✅ CONSENSUS BUY (${data.buy_votes}/4)`
         : `❌ NO CONSENSUS (${data.buy_votes}/4 BUY)`;
       const txs = (data.tx_hashes || []).length;
       status.className = 'submit-status success';
       status.textContent = `${verdict} — ${txs} verdicts posted on-chain`;
+      
+      // Mark free run as used
+      if (connectedWallet && !freeRunUsed) {
+        freeRunUsed = true;
+        localStorage.setItem('gt_free_' + connectedWallet.toLowerCase(), '1');
+        document.getElementById('free-badge').textContent = '💰 $0.01/session';
+        document.getElementById('free-badge').className = 'free-badge paid';
+      }
+      
       addrEl.value = '';
       nameEl.value = '';
       ctxEl.value = '';

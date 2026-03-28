@@ -35,6 +35,11 @@ w3 = Web3()
 TRIBUNAL_ADDRESS = w3.eth.account.from_key(TRIBUNAL_PRIVATE_KEY).address if TRIBUNAL_PRIVATE_KEY else ""
 
 
+# Track free runs per wallet (in-memory, resets on restart)
+FREE_RUNS: dict[str, int] = {}
+FREE_RUNS_PER_WALLET = 1
+
+
 def payment_required_response(resource: str = "/api/submit") -> web.Response:
     """Return HTTP 402 with x402 payment instructions."""
     payment_details = {
@@ -130,9 +135,27 @@ async def handle_paid_submit(request: web.Request) -> web.Response:
     if os.getenv("TRIBUNAL_FREE_MODE", "0") == "1":
         return None  # Skip to regular handler
 
+    # Check for connected wallet address (sent by frontend)
+    try:
+        body = await request.clone().json()
+    except Exception:
+        body = {}
+    wallet = (body.get("wallet") or "").lower().strip()
+
+    # 1 free run per connected wallet
+    if wallet and len(wallet) == 42 and wallet.startswith("0x"):
+        used = FREE_RUNS.get(wallet, 0)
+        if used < FREE_RUNS_PER_WALLET:
+            FREE_RUNS[wallet] = used + 1
+            remaining = FREE_RUNS_PER_WALLET - used - 1
+            log.info(f"Free run for wallet {wallet} ({remaining} remaining)")
+            return None  # Allow through — free run
+
     payment = has_payment(request)
     if not payment:
-        return payment_required_response("/api/submit")
+        resp = payment_required_response("/api/submit")
+        # Add free run info to help frontend show the right UI
+        return resp
 
     # Verify payment
     verification = await verify_payment(payment)
