@@ -171,7 +171,17 @@ async function submitToken() {
   btn.disabled = true;
   btn.textContent = '👻';
   status.className = 'submit-status thinking';
-  status.textContent = 'The tribunal is deliberating...';
+  status.textContent = '🎰 The Degen is analyzing...';
+
+  const agentSteps = [
+    { delay: 3000, text: '🛡️ The Sentinel is scanning for risks...' },
+    { delay: 7000, text: '🔮 The Oracle reads the narrative...' },
+    { delay: 11000, text: '📊 The Quant crunches the numbers...' },
+    { delay: 15000, text: '👻 Tallying votes...' },
+  ];
+  const stepTimers = agentSteps.map(s =>
+    setTimeout(() => { if (btn.disabled) status.textContent = s.text; }, s.delay)
+  );
 
   try {
     const payload = {
@@ -218,6 +228,7 @@ async function submitToken() {
     status.textContent = `Error: ${e.message}`;
   }
 
+  stepTimers.forEach(clearTimeout);
   btn.disabled = false;
   btn.textContent = 'SUMMON';
 }
