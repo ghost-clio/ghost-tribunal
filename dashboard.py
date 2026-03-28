@@ -42,7 +42,13 @@ async def handle_api_sessions(request):
 
 
 async def handle_api_submit(request):
-    """Submit a token for tribunal review."""
+    """Submit a token for tribunal review (x402-gated)."""
+    # x402 payment check
+    from x402_gate import handle_paid_submit
+    payment_response = await handle_paid_submit(request)
+    if payment_response is not None:
+        return payment_response
+
     try:
         body = await request.json()
     except Exception:

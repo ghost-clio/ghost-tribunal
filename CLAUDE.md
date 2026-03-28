@@ -4,11 +4,22 @@
 X Layer Onchain OS AI Hackathon submission. An AI agent council (4 agents with distinct personalities) that debates token opportunities, posts verdicts on-chain on X Layer, and executes trades on consensus.
 
 ## Status
-Core code is built. Needs:
-1. OKX API keys (apply at https://web3.okx.com/onchain-os/dev-portal)
-2. OpenRouter API key with credits ($5-10) — set OPENROUTER_API_KEY in .env
-3. X Layer wallet with OKB for gas — set TRIBUNAL_PRIVATE_KEY in .env
-4. Install onchainos CLI: `curl -sSL https://raw.githubusercontent.com/okx/onchainos-skills/main/install.sh | sh`
+Core code built and tested. On-chain verdicts verified on testnet.
+
+### Done:
+- ✅ 4 AI agents with distinct personalities
+- ✅ On-chain verdict posting (testnet TX: 972083dd...e69eb81a)
+- ✅ Testnet wallet funded (0.2 OKB)
+- ✅ Dashboard with live session view
+- ✅ x402 payment gate (CodeNut facilitator on X Layer)
+- ✅ Trend watcher (X trending → token matching)
+- ✅ All imports verified clean
+
+### Needs:
+1. OpenRouter API key with credits ($5-10) — set OPENROUTER_API_KEY in .env
+2. Mainnet OKB for gas (testnet verified, mainnet needed for submission)
+3. Demo video / screenshots
+4. OKX API keys (optional — for enhanced token data)
 
 ## Architecture
 - `tribunal.py` — main orchestrator. Runs 4 agents in parallel via OpenRouter, posts verdicts as on-chain memos (X Layer txs), executes DEX swap on 3/4 consensus
