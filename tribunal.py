@@ -331,20 +331,105 @@ async def demo_session(token_name: str, token_address: str):
 
 
 async def main():
-    """Main entry: run in demo mode with a sample token."""
+    """Main entry: run tribunal on a token or in demo mode."""
     import sys
+
+    if "--demo" in sys.argv:
+        # Offline demo with canned responses — no API key needed
+        await _run_offline_demo()
+        return
 
     if len(sys.argv) >= 3:
         name = sys.argv[1]
         address = sys.argv[2]
     else:
-        # Default demo token
         name = "DemoToken"
         address = "0x0000000000000000000000000000000000000000"
         log.info("Usage: python tribunal.py <token_name> <token_address>")
+        log.info("       python tribunal.py --demo  (offline demo, no API key)")
         log.info("Running with demo token...\n")
 
     await demo_session(name, address)
+
+
+async def _run_offline_demo():
+    """Run an offline demo with canned agent responses — no API key needed."""
+    import time
+
+    log.info("=" * 60)
+    log.info("OFFLINE DEMO — Ghost Tribunal")
+    log.info("=" * 60)
+
+    demo_verdicts = [
+        {
+            "agent": "degen", "name": "The Degen", "emoji": "🎰",
+            "verdict": "BUY",
+            "reasoning": "Volume pumping hard, narrative is hot with the AI agent meta, chart looks like it wants to send. LFG ser. Confidence: 8/10",
+        },
+        {
+            "agent": "sentinel", "name": "The Sentinel", "emoji": "🛡️",
+            "verdict": "PASS",
+            "reasoning": "Contract unverified. Top 10 wallets hold 38%. No audit. Deployer has 3 prior rugs. Risk: 7/10",
+        },
+        {
+            "agent": "oracle", "name": "The Oracle", "emoji": "🔮",
+            "verdict": "BUY",
+            "reasoning": "The AI agent narrative has legs — aligns with broader market rotation into infrastructure plays. Cultural momentum is building. Strength: 7/10",
+        },
+        {
+            "agent": "quant", "name": "The Quant", "emoji": "📊",
+            "verdict": "BUY",
+            "reasoning": "Vol/mcap ratio 0.45x is healthy. Buy pressure 3.2:1. Liquidity $48K sufficient for position sizing. EV: +22%",
+        },
+    ]
+
+    token_name = "AgentLayer"
+    token_address = "0x742d35Cc6634C0532925a3b844Bc9e7595f2bD18"
+
+    for v in demo_verdicts:
+        icon = "✅" if v["verdict"] == "BUY" else "❌"
+        log.info(f"  {v['emoji']} {v['name']}: {icon} {v['verdict']}")
+        log.info(f"     {v['reasoning']}")
+        await asyncio.sleep(0.5)
+
+    buy_votes = sum(1 for v in demo_verdicts if v["verdict"] == "BUY")
+    consensus = buy_votes >= VOTE_THRESHOLD
+    log.info(f"\nVOTE: {buy_votes}/4 BUY → {'CONSENSUS REACHED ✅' if consensus else 'NO CONSENSUS ❌'}")
+
+    # Post verdicts on-chain (this works without OpenRouter)
+    tx_hashes = []
+    for v in demo_verdicts:
+        tx_hash = await post_verdict_onchain(
+            v["name"], token_address, v["verdict"], v["reasoning"][:200],
+        )
+        if tx_hash:
+            tx_hashes.append(tx_hash)
+            log.info(f"  On-chain: {tx_hash[:20]}...")
+        await asyncio.sleep(1)
+
+    # Save session
+    session_record = {
+        "timestamp": datetime.now(timezone.utc).isoformat(),
+        "token_name": token_name,
+        "token_address": token_address,
+        "token_data": {"symbol": "AGENTL", "mcap": 150000, "volume_24h": 67500},
+        "trend_info": "AI agent infrastructure trending on X",
+        "verdicts": [
+            {"agent": v["agent"], "verdict": v["verdict"], "reasoning": v["reasoning"]}
+            for v in demo_verdicts
+        ],
+        "consensus": consensus,
+        "buy_votes": buy_votes,
+        "tx_hashes": tx_hashes,
+        "trade": None,
+    }
+
+    with open(SESSIONS_FILE, "a") as f:
+        f.write(json.dumps(session_record) + "\n")
+
+    log.info(f"\n{'🟢 CONSENSUS — trade would execute' if consensus else '🔴 NO CONSENSUS — no trade'}")
+    log.info(f"Session saved. {len(tx_hashes)} verdicts posted on-chain.")
+    log.info(f"Run 'python dashboard.py' to view in the dashboard.")
 
 
 if __name__ == "__main__":

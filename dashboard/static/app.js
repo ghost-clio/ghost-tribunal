@@ -29,15 +29,12 @@ function renderSession(s) {
   const verdicts = (s.verdicts || []).map(v => {
     const agent = AGENTS[v.agent] || { name: v.agent, emoji: '?' };
     const cls = verdictClass(v.verdict);
-    const icon = cls === 'buy' ? '✅' : cls === 'pass' ? '❌' : '⏸️';
-    // Trim reasoning to ~120 chars
-    const text = (v.reasoning || '').slice(0, 120) + ((v.reasoning || '').length > 120 ? '...' : '');
+    const text = (v.reasoning || '').slice(0, 140) + ((v.reasoning || '').length > 140 ? '...' : '');
     return `
       <div class="verdict">
         <div class="verdict-header">
-          <span class="verdict-icon ${cls}">${icon}</span>
           <span class="verdict-agent">${agent.emoji} ${agent.name}</span>
-          <span class="verdict-icon ${cls}" style="margin-left:auto">${v.verdict}</span>
+          <span class="verdict-badge ${cls}">${v.verdict}</span>
         </div>
         <div class="verdict-text">${escHtml(text)}</div>
       </div>
@@ -78,7 +75,7 @@ async function loadSessions() {
     const el = document.getElementById('sessions');
 
     if (!sessions.length) {
-      el.innerHTML = '<div class="loading">No tribunal sessions yet. Run <code>python tribunal.py</code> to start.</div>';
+      el.innerHTML = '<div class="empty-state"><div class="empty-icon">👻</div><p>No tribunal sessions yet</p><p class="empty-sub">Submit a token above or run <code>python tribunal.py</code></p></div>';
       return;
     }
 
@@ -123,6 +120,7 @@ async function refresh() {
 // Submit token to tribunal
 async function submitToken() {
   const addrEl = document.getElementById('token-input');
+  const nameEl = document.getElementById('name-input');
   const ctxEl = document.getElementById('context-input');
   const btn = document.getElementById('submit-btn');
   const status = document.getElementById('submit-status');
@@ -131,8 +129,9 @@ async function submitToken() {
   if (!address) { addrEl.focus(); return; }
 
   btn.disabled = true;
+  btn.textContent = '👻';
   status.className = 'submit-status thinking';
-  status.textContent = '👻 The tribunal is deliberating...';
+  status.textContent = 'The tribunal is deliberating...';
 
   try {
     const resp = await fetch('/api/submit', {
@@ -140,7 +139,7 @@ async function submitToken() {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         address: address,
-        name: '',
+        name: nameEl.value.trim(),
         context: ctxEl.value.trim(),
       }),
     });
@@ -155,6 +154,7 @@ async function submitToken() {
       status.className = 'submit-status success';
       status.textContent = `${verdict} — ${txs} verdicts posted on-chain`;
       addrEl.value = '';
+      nameEl.value = '';
       ctxEl.value = '';
       await refresh();
     } else {
@@ -167,11 +167,14 @@ async function submitToken() {
   }
 
   btn.disabled = false;
+  btn.textContent = 'SUMMON';
 }
 
-// Submit on Enter in address field
-document.getElementById('token-input').addEventListener('keydown', e => {
-  if (e.key === 'Enter') submitToken();
+// Submit on Enter in any input field
+['token-input', 'name-input', 'context-input'].forEach(id => {
+  document.getElementById(id).addEventListener('keydown', e => {
+    if (e.key === 'Enter') submitToken();
+  });
 });
 
 // Init

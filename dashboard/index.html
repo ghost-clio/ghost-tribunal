@@ -3,8 +3,10 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Ghost Tribunal</title>
+  <title>Ghost Tribunal — AI Agent Council on X Layer</title>
+  <meta name="description" content="Four AI agents debate, vote, and trade narratives on-chain. Every verdict is permanent.">
   <link rel="stylesheet" href="/static/style.css">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>👻</text></svg>">
 </head>
 <body>
   <div class="container">
@@ -12,6 +14,7 @@
       <div class="logo">👻</div>
       <h1>GHOST TRIBUNAL</h1>
       <p class="subtitle">AI Agent Council — X Layer</p>
+      <p class="tagline">Four agents. Four perspectives. One verdict — on-chain forever.</p>
     </header>
 
     <div class="stats-bar" id="stats-bar">
@@ -34,10 +37,15 @@
     </div>
 
     <div class="submit-bar" id="submit-bar">
+      <div class="submit-header">
+        <span class="submit-icon">⚡</span>
+        <span>Submit a token for tribunal review</span>
+      </div>
       <div class="submit-inner">
-        <input type="text" id="token-input" placeholder="Paste token contract address (X Layer)" spellcheck="false" />
-        <input type="text" id="context-input" placeholder="Context (optional — why look at this?)" spellcheck="false" />
-        <button id="submit-btn" onclick="submitToken()">⚡ SUMMON THE TRIBUNAL</button>
+        <input type="text" id="token-input" placeholder="Token contract address (X Layer)" spellcheck="false" />
+        <input type="text" id="name-input" placeholder="Token name" spellcheck="false" />
+        <input type="text" id="context-input" placeholder="Context (optional)" spellcheck="false" />
+        <button id="submit-btn" onclick="submitToken()">SUMMON</button>
       </div>
       <div id="submit-status" class="submit-status"></div>
     </div>
@@ -46,34 +54,72 @@
       <div class="agent-card" id="agent-degen">
         <span class="agent-emoji">🎰</span>
         <span class="agent-name">The Degen</span>
+        <span class="agent-role">Momentum & Hype</span>
         <span class="agent-stat" id="degen-stat">—</span>
       </div>
       <div class="agent-card" id="agent-sentinel">
         <span class="agent-emoji">🛡️</span>
         <span class="agent-name">The Sentinel</span>
+        <span class="agent-role">Security & Risk</span>
         <span class="agent-stat" id="sentinel-stat">—</span>
       </div>
       <div class="agent-card" id="agent-oracle">
         <span class="agent-emoji">🔮</span>
         <span class="agent-name">The Oracle</span>
+        <span class="agent-role">Narrative & Culture</span>
         <span class="agent-stat" id="oracle-stat">—</span>
       </div>
       <div class="agent-card" id="agent-quant">
         <span class="agent-emoji">📊</span>
         <span class="agent-name">The Quant</span>
+        <span class="agent-role">Data & Numbers</span>
         <span class="agent-stat" id="quant-stat">—</span>
       </div>
     </div>
 
+    <div class="section-header">
+      <h2>Recent Sessions</h2>
+      <span class="live-dot"></span>
+    </div>
+
     <div class="sessions" id="sessions">
-      <div class="loading">Loading tribunal sessions...</div>
+      <div class="empty-state">
+        <div class="empty-icon">👻</div>
+        <p>No tribunal sessions yet</p>
+        <p class="empty-sub">Submit a token above or run <code>python tribunal.py</code></p>
+      </div>
+    </div>
+
+    <div class="how-it-works">
+      <h2>How It Works</h2>
+      <div class="steps">
+        <div class="step">
+          <span class="step-num">1</span>
+          <span class="step-text">Submit a token contract address</span>
+        </div>
+        <div class="step-arrow">→</div>
+        <div class="step">
+          <span class="step-num">2</span>
+          <span class="step-text">4 AI agents analyze from different angles</span>
+        </div>
+        <div class="step-arrow">→</div>
+        <div class="step">
+          <span class="step-num">3</span>
+          <span class="step-text">Each verdict posted on-chain (X Layer)</span>
+        </div>
+        <div class="step-arrow">→</div>
+        <div class="step">
+          <span class="step-num">4</span>
+          <span class="step-text">3/4 agree = consensus trade executes</span>
+        </div>
+      </div>
     </div>
 
     <footer class="footer">
       <div class="footer-inner">
-        <p>⛓️ All verdicts posted on-chain on <a href="https://www.okx.com/web3/explorer/xlayer" target="_blank">X Layer</a></p>
-        <p>💰 Powered by <a href="https://x402.org" target="_blank">x402</a> — pay-per-session, no accounts needed</p>
-        <p>🔗 <a href="https://github.com/ghost-clio/ghost-tribunal" target="_blank">Open Source</a> · Built for X Layer Onchain OS AI Hackathon</p>
+        <p>⛓️ All verdicts immutably recorded on <a href="https://www.okx.com/web3/explorer/xlayer" target="_blank">X Layer</a></p>
+        <p>💰 Pay-per-session via <a href="https://x402.org" target="_blank">x402</a> · Powered by <a href="https://www.okx.com/web3/xlayer" target="_blank">OKX OnchainOS</a></p>
+        <p>🔗 <a href="https://github.com/ghost-clio/ghost-tribunal" target="_blank">GitHub</a> · Built for X Layer Onchain OS AI Hackathon</p>
       </div>
     </footer>
   </div>
