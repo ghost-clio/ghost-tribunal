@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Ghost Tribunal</title>
+  <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+  <div class="container">
+    <header>
+      <div class="logo">👻</div>
+      <h1>GHOST TRIBUNAL</h1>
+      <p class="subtitle">AI Agent Council — X Layer</p>
+    </header>
+
+    <div class="stats-bar" id="stats-bar">
+      <div class="stat">
+        <span class="stat-value" id="stat-total">—</span>
+        <span class="stat-label">Sessions</span>
+      </div>
+      <div class="stat">
+        <span class="stat-value green" id="stat-buys">—</span>
+        <span class="stat-label">Consensus Buys</span>
+      </div>
+      <div class="stat">
+        <span class="stat-value red" id="stat-passes">—</span>
+        <span class="stat-label">Rejected</span>
+      </div>
+      <div class="stat">
+        <span class="stat-value" id="stat-rate">—</span>
+        <span class="stat-label">Approval Rate</span>
+      </div>
+    </div>
+
+    <div class="submit-bar" id="submit-bar">
+      <div class="submit-inner">
+        <input type="text" id="token-input" placeholder="Paste token contract address (X Layer)" spellcheck="false" />
+        <input type="text" id="context-input" placeholder="Context (optional — why look at this?)" spellcheck="false" />
+        <button id="submit-btn" onclick="submitToken()">⚡ SUMMON THE TRIBUNAL</button>
+      </div>
+      <div id="submit-status" class="submit-status"></div>
+    </div>
+
+    <div class="agents-bar">
+      <div class="agent-card" id="agent-degen">
+        <span class="agent-emoji">🎰</span>
+        <span class="agent-name">The Degen</span>
+        <span class="agent-stat" id="degen-stat">—</span>
+      </div>
+      <div class="agent-card" id="agent-sentinel">
+        <span class="agent-emoji">🛡️</span>
+        <span class="agent-name">The Sentinel</span>
+        <span class="agent-stat" id="sentinel-stat">—</span>
+      </div>
+      <div class="agent-card" id="agent-oracle">
+        <span class="agent-emoji">🔮</span>
+        <span class="agent-name">The Oracle</span>
+        <span class="agent-stat" id="oracle-stat">—</span>
+      </div>
+      <div class="agent-card" id="agent-quant">
+        <span class="agent-emoji">📊</span>
+        <span class="agent-name">The Quant</span>
+        <span class="agent-stat" id="quant-stat">—</span>
+      </div>
+    </div>
+
+    <div class="sessions" id="sessions">
+      <div class="loading">Loading tribunal sessions...</div>
+    </div>
+  </div>
+
+  <script src="/static/app.js"></script>
+</body>
+</html>
