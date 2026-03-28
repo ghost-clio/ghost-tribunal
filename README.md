@@ -42,7 +42,7 @@ Single-agent trading bots have one perspective and one failure mode. Ghost Tribu
 Trend Detected
     → Token Matched on X Layer
         → Security Scan (OKX OnchainOS)
-            → 4 Agents Analyze in Parallel
+            → 4 Agents Analyze Sequentially
                 → Verdicts Posted On-Chain (memo txs)
                     → Consensus Vote (3/4 required)
                         → Trade Execution (OKX DEX Aggregator)
@@ -93,11 +93,12 @@ Set `TRIBUNAL_FREE_MODE=1` for demos and testing.
 The dashboard shows tribunal sessions with a dark terminal aesthetic:
 
 - **Submit tokens** for tribunal review directly from the UI
+- **1 free run per connected wallet** — then $0.01/session via x402
 - **Agent verdicts** with reasoning — see what each agent thought
 - **Consensus results** (BUY / PASS) with vote counts
 - **On-chain links** to X Layer Explorer for every verdict
 - **Agent stats** — track each agent's bullish rate over time
-- Auto-refreshes every 10 seconds
+- **Live animated progress** — watch each agent deliberate in real-time
 
 ```bash
 python dashboard.py  # → http://localhost:3000
@@ -165,7 +166,10 @@ ghost-tribunal/
 │   └── static/
 │       ├── style.css
 │       └── app.js
-└── config.py        # All configuration, reads from .env
+├── config.py        # All configuration, reads from .env
+└── supabase/
+    └── functions/
+        └── tribunal-session/  # Serverless API — powers the live dashboard
 ```
 
 ## Tech Stack
