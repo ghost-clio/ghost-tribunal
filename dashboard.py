@@ -138,8 +138,21 @@ async def handle_api_stats(request):
     })
 
 
+@web.middleware
+async def cors_middleware(request, handler):
+    """Allow cross-origin requests from GitHub Pages."""
+    if request.method == "OPTIONS":
+        resp = web.Response()
+    else:
+        resp = await handler(request)
+    resp.headers["Access-Control-Allow-Origin"] = "*"
+    resp.headers["Access-Control-Allow-Methods"] = "GET, POST, OPTIONS"
+    resp.headers["Access-Control-Allow-Headers"] = "Content-Type"
+    return resp
+
+
 def create_app() -> web.Application:
-    app = web.Application()
+    app = web.Application(middlewares=[cors_middleware])
     app.router.add_get("/", handle_index)
     app.router.add_get("/api/sessions", handle_api_sessions)
     app.router.add_post("/api/submit", handle_api_submit)

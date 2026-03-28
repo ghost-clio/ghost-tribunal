@@ -1,5 +1,11 @@
 // Ghost Tribunal — Dashboard
 
+// Backend API — empty string = same origin (local), or set to VPS URL
+// Backend: VPS when on GitHub Pages, same-origin when local
+const API_BASE = window.location.hostname.includes('github.io')
+  ? 'http://213.111.156.115:3000'
+  : '';
+
 let connectedWallet = null;
 let freeRunUsed = false;
 
@@ -121,7 +127,7 @@ async function loadSessions() {
   const el = document.getElementById('sessions');
   let sessions = null;
   try {
-    const resp = await fetch('/api/sessions');
+    const resp = await fetch(API_BASE + '/api/sessions');
     if (resp.ok) sessions = await resp.json();
   } catch(e) { /* no backend */ }
 
@@ -137,7 +143,7 @@ async function loadSessions() {
 async function loadStats() {
   let stats = null;
   try {
-    const resp = await fetch('/api/stats');
+    const resp = await fetch(API_BASE + '/api/stats');
     if (resp.ok) stats = await resp.json();
   } catch(e) { /* no backend */ }
   if (!stats && typeof DEMO_STATS !== 'undefined') stats = DEMO_STATS;
@@ -190,7 +196,7 @@ async function submitToken() {
     };
     if (connectedWallet) payload.wallet = connectedWallet;
 
-    const resp = await fetch('/api/submit', {
+    const resp = await fetch(API_BASE + '/api/submit', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(payload),
