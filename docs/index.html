@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Ghost Tribunal — AI Agent Council on X Layer</title>
+  <meta name="description" content="Four AI agents debate, vote, and trade narratives on-chain. Every verdict is permanent.">
+  <link rel="stylesheet" href="static/style.css">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>👻</text></svg>">
+</head>
+<body>
+  <div class="container">
+    <header>
+      <div class="logo">👻</div>
+      <h1>GHOST TRIBUNAL</h1>
+      <p class="subtitle">AI Agent Council — X Layer</p>
+      <p class="tagline">Four agents. Four perspectives. One verdict — on-chain forever.</p>
+    </header>
+
+    <div class="stats-bar" id="stats-bar">
+      <div class="stat">
+        <span class="stat-value" id="stat-total">—</span>
+        <span class="stat-label">Sessions</span>
+      </div>
+      <div class="stat">
+        <span class="stat-value green" id="stat-buys">—</span>
+        <span class="stat-label">Consensus Buys</span>
+      </div>
+      <div class="stat">
+        <span class="stat-value red" id="stat-passes">—</span>
+        <span class="stat-label">Rejected</span>
+      </div>
+      <div class="stat">
+        <span class="stat-value" id="stat-rate">—</span>
+        <span class="stat-label">Approval Rate</span>
+      </div>
+    </div>
+
+    <div class="submit-bar" id="submit-bar">
+      <div class="submit-header">
+        <span class="submit-icon">⚡</span>
+        <span>Submit a token for tribunal review</span>
+      </div>
+
+      <div class="wallet-bar" id="wallet-bar">
+        <button id="connect-btn" class="connect-btn" onclick="connectWallet()">🔗 Connect Wallet</button>
+        <div id="wallet-info" class="wallet-info" style="display:none">
+          <span id="wallet-addr" class="wallet-addr"></span>
+          <span id="free-badge" class="free-badge">🎁 1 FREE RUN</span>
+        </div>
+      </div>
+
+      <div class="submit-inner">
+        <input type="text" id="token-input" placeholder="Token contract address (X Layer)" spellcheck="false" />
+        <input type="text" id="name-input" placeholder="Token name" spellcheck="false" />
+        <input type="text" id="context-input" placeholder="Context (optional)" spellcheck="false" />
+        <button id="submit-btn" onclick="submitToken()">SUMMON THE TRIBUNAL</button>
+      </div>
+      <div class="pricing-note" id="pricing-note">
+        <span>💰 $0.01 USDC per session via x402 · <strong>First run FREE</strong> with connected wallet</span>
+      </div>
+      <div id="submit-status" class="submit-status"></div>
+    </div>
+
+    <div class="agents-bar">
+      <div class="agent-card" id="agent-degen">
+        <span class="agent-emoji">🎰</span>
+        <span class="agent-name">The Degen</span>
+        <span class="agent-role">Momentum & Hype</span>
+        <span class="agent-stat" id="degen-stat">—</span>
+      </div>
+      <div class="agent-card" id="agent-sentinel">
+        <span class="agent-emoji">🛡️</span>
+        <span class="agent-name">The Sentinel</span>
+        <span class="agent-role">Security & Risk</span>
+        <span class="agent-stat" id="sentinel-stat">—</span>
+      </div>
+      <div class="agent-card" id="agent-oracle">
+        <span class="agent-emoji">🔮</span>
+        <span class="agent-name">The Oracle</span>
+        <span class="agent-role">Narrative & Culture</span>
+        <span class="agent-stat" id="oracle-stat">—</span>
+      </div>
+      <div class="agent-card" id="agent-quant">
+        <span class="agent-emoji">📊</span>
+        <span class="agent-name">The Quant</span>
+        <span class="agent-role">Data & Numbers</span>
+        <span class="agent-stat" id="quant-stat">—</span>
+      </div>
+    </div>
+
+    <div class="section-header">
+      <h2>Recent Sessions</h2>
+      <span class="live-dot"></span>
+    </div>
+
+    <div class="sessions" id="sessions">
+      <div class="empty-state">
+        <div class="empty-icon">👻</div>
+        <p>No tribunal sessions yet</p>
+        <p class="empty-sub">Submit a token above or run <code>python tribunal.py</code></p>
+      </div>
+    </div>
+
+    <div class="how-it-works">
+      <h2>How It Works</h2>
+      <div class="steps">
+        <div class="step">
+          <span class="step-num">1</span>
+          <span class="step-text">Submit a token contract address</span>
+        </div>
+        <div class="step-arrow">→</div>
+        <div class="step">
+          <span class="step-num">2</span>
+          <span class="step-text">4 AI agents analyze from different angles</span>
+        </div>
+        <div class="step-arrow">→</div>
+        <div class="step">
+          <span class="step-num">3</span>
+          <span class="step-text">Each verdict posted on-chain (X Layer)</span>
+        </div>
+        <div class="step-arrow">→</div>
+        <div class="step">
+          <span class="step-num">4</span>
+          <span class="step-text">3/4 agree = consensus trade executes</span>
+        </div>
+      </div>
+    </div>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        <p>⛓️ All verdicts immutably recorded on <a href="https://www.okx.com/web3/explorer/xlayer" target="_blank">X Layer</a></p>
+        <p>💰 Pay-per-session via <a href="https://x402.org" target="_blank">x402</a> · Powered by <a href="https://www.okx.com/web3/xlayer" target="_blank">OKX OnchainOS</a></p>
+        <p>🔗 <a href="https://github.com/ghost-clio/ghost-tribunal" target="_blank">GitHub</a> · Built for X Layer Onchain OS AI Hackathon</p>
+      </div>
+    </footer>
+  </div>
+
+  <script src="demo-data.js"></script>
+  <script src="static/app.js"></script>
+</body>
+</html>
