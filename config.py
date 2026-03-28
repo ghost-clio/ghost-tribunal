@@ -5,10 +5,12 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-# X Layer
-XLAYER_RPC = os.getenv("XLAYER_RPC", "https://rpc.xlayer.tech")
-XLAYER_CHAIN_ID = 196
-XLAYER_CHAIN_INDEX = "196"  # onchainos uses string chain index
+# X Layer — default to testnet for development
+XLAYER_NETWORK = os.getenv("XLAYER_NETWORK", "testnet")  # "testnet" or "mainnet"
+XLAYER_RPC = os.getenv("XLAYER_RPC", "https://testrpc.xlayer.tech" if XLAYER_NETWORK == "testnet" else "https://rpc.xlayer.tech")
+XLAYER_CHAIN_ID = 1952 if XLAYER_NETWORK == "testnet" else 196
+XLAYER_CHAIN_INDEX = str(XLAYER_CHAIN_ID)
+XLAYER_EXPLORER = "https://www.okx.com/web3/explorer/xlayer-test" if XLAYER_NETWORK == "testnet" else "https://www.okx.com/web3/explorer/xlayer"
 
 # OKX OnchainOS
 OKX_API_KEY = os.getenv("OKX_API_KEY", "")
