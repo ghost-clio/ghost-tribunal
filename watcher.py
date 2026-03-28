@@ -17,8 +17,8 @@ from pathlib import Path
 
 import aiohttp
 
-from config import XLAYER_CHAIN_INDEX, OKX_BASE_URL
-from xlayer import _okx_headers, search_token
+from config import XLAYER_CHAIN_INDEX
+from xlayer import search_token
 from tribunal import run_tribunal
 
 log = logging.getLogger("tribunal.watcher")
@@ -43,7 +43,7 @@ class WatcherState:
     def save(self):
         STATE_FILE.parent.mkdir(exist_ok=True)
         STATE_FILE.write_text(json.dumps({
-            "seen_trends": list(self.seen_trends)[-200],
+            "seen_trends": list(self.seen_trends)[-200:],
         }))
 
     def is_new(self, trend: str) -> bool:

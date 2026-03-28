@@ -7,6 +7,7 @@ import subprocess
 import time
 from pathlib import Path
 
+import aiohttp
 from web3 import Web3
 
 from config import (
@@ -109,8 +110,13 @@ async def post_verdict_onchain(agent_name: str, token: str, verdict: str, reason
 
 # ── Token Search ─────────────────────────────────────────────────────────────
 
-async def search_token(query: str) -> list[dict]:
+async def search_token(session_or_query=None, query: str = "") -> list[dict]:
     """Search for tokens on X Layer via onchainos CLI."""
+    # Handle both search_token("query") and search_token(session, "query")
+    if isinstance(session_or_query, str):
+        query = session_or_query
+    elif query == "" and session_or_query is not None:
+        query = ""
     result = await _run_onchainos_async(
         "token", "search", "--query", query, "--chains", "196"
     )
@@ -149,7 +155,12 @@ async def scan_token_security(token_address: str) -> dict | None:
 
 # ── DEX Swap ─────────────────────────────────────────────────────────────────
 
-async def get_swap_quote(from_token: str, to_token: str, amount: str) -> dict | None:
+async def get_token_security(session: aiohttp.ClientSession, token_address: str) -> dict | None:
+    """Get token security info via OKX API or onchainos CLI."""
+    return await scan_token_security(token_address)
+
+
+async def get_swap_quote(session: aiohttp.ClientSession = None, from_token: str = "", to_token: str = "", amount: str = "") -> dict | None:
     """Get swap quote via onchainos CLI."""
     result = await _run_onchainos_async(
         "swap", "quote",
