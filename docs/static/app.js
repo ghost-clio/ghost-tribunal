@@ -118,36 +118,30 @@ function escHtml(s) {
 }
 
 async function loadSessions() {
+  const el = document.getElementById('sessions');
+  let sessions = null;
   try {
     const resp = await fetch('/api/sessions');
-    const sessions = await resp.json();
-    const el = document.getElementById('sessions');
+    if (resp.ok) sessions = await resp.json();
+  } catch(e) { /* no backend */ }
 
-    if (!sessions.length) {
-      el.innerHTML = '<div class="empty-state"><div class="empty-icon">👻</div><p>No tribunal sessions yet</p><p class="empty-sub">Submit a token above or run <code>python tribunal.py</code></p></div>';
-      return;
-    }
-
-    el.innerHTML = sessions.reverse().map(renderSession).join('');
-  } catch(e) {
-    // Fallback to demo data (GitHub Pages, no backend)
-    if (typeof DEMO_SESSIONS !== 'undefined') {
-      const el = document.getElementById('sessions');
-      el.innerHTML = DEMO_SESSIONS.map(renderSession).join('');
-    }
+  // Fallback to demo data (GitHub Pages, no backend)
+  if (!sessions && typeof DEMO_SESSIONS !== 'undefined') sessions = DEMO_SESSIONS;
+  if (!sessions || !sessions.length) {
+    el.innerHTML = '<div class="empty-state"><div class="empty-icon">👻</div><p>No tribunal sessions yet</p><p class="empty-sub">Submit a token above or run <code>python tribunal.py</code></p></div>';
+    return;
   }
+  el.innerHTML = sessions.reverse().map(renderSession).join('');
 }
 
 async function loadStats() {
-  let stats;
+  let stats = null;
   try {
     const resp = await fetch('/api/stats');
-    stats = await resp.json();
-  } catch(e) {
-    // Fallback to demo stats
-    if (typeof DEMO_STATS !== 'undefined') stats = DEMO_STATS;
-    else return;
-  }
+    if (resp.ok) stats = await resp.json();
+  } catch(e) { /* no backend */ }
+  if (!stats && typeof DEMO_STATS !== 'undefined') stats = DEMO_STATS;
+  if (!stats) return;
 
     document.getElementById('stat-total').textContent = stats.total_sessions;
     document.getElementById('stat-buys').textContent = stats.consensus_buys;
