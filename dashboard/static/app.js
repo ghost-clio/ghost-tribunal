@@ -128,17 +128,26 @@ async function loadSessions() {
       return;
     }
 
-    // Show newest first
     el.innerHTML = sessions.reverse().map(renderSession).join('');
   } catch(e) {
-    console.error('Failed to load sessions:', e);
+    // Fallback to demo data (GitHub Pages, no backend)
+    if (typeof DEMO_SESSIONS !== 'undefined') {
+      const el = document.getElementById('sessions');
+      el.innerHTML = DEMO_SESSIONS.map(renderSession).join('');
+    }
   }
 }
 
 async function loadStats() {
+  let stats;
   try {
     const resp = await fetch('/api/stats');
-    const stats = await resp.json();
+    stats = await resp.json();
+  } catch(e) {
+    // Fallback to demo stats
+    if (typeof DEMO_STATS !== 'undefined') stats = DEMO_STATS;
+    else return;
+  }
 
     document.getElementById('stat-total').textContent = stats.total_sessions;
     document.getElementById('stat-buys').textContent = stats.consensus_buys;
@@ -157,9 +166,6 @@ async function loadStats() {
         el.style.color = rate > 60 ? 'var(--green)' : rate < 30 ? 'var(--red)' : 'var(--text)';
       }
     }
-  } catch(e) {
-    console.error('Failed to load stats:', e);
-  }
 }
 
 async function refresh() {

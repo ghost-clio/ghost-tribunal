@@ -11,7 +11,16 @@
 <body>
   <div class="container">
     <header>
-      <div class="logo">👻</div>
+      <div class="header-top">
+        <div class="logo">👻</div>
+        <div id="wallet-bar" class="wallet-bar">
+          <button id="connect-btn" class="connect-btn" onclick="connectWallet()">🔗 Connect Wallet</button>
+          <div id="wallet-info" class="wallet-info" style="display:none">
+            <span id="wallet-addr" class="wallet-addr"></span>
+            <span id="free-badge" class="free-badge">🎁 1 FREE RUN</span>
+          </div>
+        </div>
+      </div>
       <h1>GHOST TRIBUNAL</h1>
       <p class="subtitle">AI Agent Council — X Layer</p>
       <p class="tagline">Four agents. Four perspectives. One verdict — on-chain forever.</p>
@@ -40,14 +49,6 @@
       <div class="submit-header">
         <span class="submit-icon">⚡</span>
         <span>Submit a token for tribunal review</span>
-      </div>
-
-      <div class="wallet-bar" id="wallet-bar">
-        <button id="connect-btn" class="connect-btn" onclick="connectWallet()">🔗 Connect Wallet</button>
-        <div id="wallet-info" class="wallet-info" style="display:none">
-          <span id="wallet-addr" class="wallet-addr"></span>
-          <span id="free-badge" class="free-badge">🎁 1 FREE RUN</span>
-        </div>
       </div>
 
       <div class="submit-inner">
