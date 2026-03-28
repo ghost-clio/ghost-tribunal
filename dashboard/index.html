@@ -52,13 +52,13 @@
       </div>
 
       <div class="submit-inner">
-        <input type="text" id="token-input" placeholder="Token contract address (X Layer)" spellcheck="false" />
-        <input type="text" id="name-input" placeholder="Token name" spellcheck="false" />
-        <input type="text" id="context-input" placeholder="Context (optional)" spellcheck="false" />
+        <input type="text" id="token-input" placeholder="0x... contract address" spellcheck="false" />
+        <input type="text" id="name-input" placeholder="Name" spellcheck="false" />
+        <input type="text" id="context-input" placeholder="Context" spellcheck="false" />
         <button id="submit-btn" onclick="submitToken()">SUMMON THE TRIBUNAL</button>
       </div>
       <div class="pricing-note" id="pricing-note">
-        <span>💰 $0.01 USDC per session via x402 · <strong>First run FREE</strong> with connected wallet</span>
+        <span>💰 $0.01/session via x402 · <strong>First run FREE</strong></span>
       </div>
       <div id="submit-status" class="submit-status"></div>
     </div>
@@ -137,6 +137,7 @@
     </footer>
   </div>
 
+  <script src="/static/demo-data.js"></script>
   <script src="/static/app.js"></script>
 </body>
 </html>
