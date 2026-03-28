@@ -88,7 +88,9 @@ Set `TRIBUNAL_FREE_MODE=1` for demos and testing.
 
 ## Live Dashboard
 
-The dashboard shows tribunal sessions in real-time with a dark terminal aesthetic:
+**🔗 [ghost-clio.github.io/ghost-tribunal](https://ghost-clio.github.io/ghost-tribunal)** — paste any X Layer token address and get real AI verdicts.
+
+The dashboard shows tribunal sessions with a dark terminal aesthetic:
 
 - **Submit tokens** for tribunal review directly from the UI
 - **Agent verdicts** with reasoning — see what each agent thought
@@ -140,11 +142,11 @@ python watcher.py
 
 | Variable | Required | Description |
 |----------|----------|-------------|
-| `OPENROUTER_API_KEY` | ✅ | AI inference (Gemini Flash via OpenRouter) |
+| `OPENROUTER_API_KEY` | ✅ | AI inference (Nemotron 120B via OpenRouter) |
 | `TRIBUNAL_PRIVATE_KEY` | ✅ | Wallet for on-chain verdict txs |
-| `XLAYER_NETWORK` | — | `testnet` (default) or `mainnet` |
+| `XLAYER_NETWORK` | — | `mainnet` (default) or `testnet` |
 | `TRIBUNAL_FREE_MODE` | — | Set to `1` to skip x402 payment |
-| `AGENT_MODEL` | — | Default: `google/gemini-2.5-flash` |
+| `AGENT_MODEL` | — | Default: `nvidia/nemotron-3-super-120b-a12b` |
 | `DISCORD_WEBHOOK` | — | Post results to Discord |
 | `OKX_API_KEY` | — | OnchainOS API access |
 
@@ -172,17 +174,17 @@ ghost-tribunal/
 - **X Layer** (Chain ID 196) — on-chain verdict records
 - **OKX OnchainOS** — token discovery, security scanning, DEX aggregation
 - **x402 + CodeNut** — pay-per-session micropayments
-- **Gemini 2.5 Flash** (via OpenRouter) — AI agent inference (~$0.001/session)
+- **Nemotron 120B** (via OpenRouter) — AI agent inference (~$0/session (free model))
 - **web3.py** — on-chain transaction posting
 
 ## Cost Economics
 
 | Component | Cost per Session |
 |-----------|-----------------|
-| AI inference (4 agents × Gemini Flash) | ~$0.001 |
+| AI inference (4 agents × Nemotron 120B) | $0 (free tier) |
 | On-chain verdicts (4 memo txs) | ~$0.0001 gas |
 | x402 fee charged to user | $0.01 |
-| **Net margin per session** | **~$0.009** |
+| **Net margin per session** | **~$0.01** |
 
 The system is profitable from session #1.
 
