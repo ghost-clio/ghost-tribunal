@@ -191,6 +191,8 @@ async function submitToken() {
     };
     if (connectedWallet) payload.wallet = connectedWallet;
 
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), 20000);
     const resp = await fetch(TRIBUNAL_API, {
       method: 'POST',
       headers: {
@@ -198,7 +200,9 @@ async function submitToken() {
         'Authorization': `Bearer ${SUPABASE_ANON}`,
       },
       body: JSON.stringify(payload),
+      signal: controller.signal,
     });
+    clearTimeout(timeout);
 
     const data = await resp.json();
     if (data.error) throw new Error(data.error);
@@ -225,7 +229,11 @@ async function submitToken() {
     }
   } catch(e) {
     status.className = 'submit-status error';
-    status.textContent = `Error: ${e.message}`;
+    if (e.name === 'AbortError' || e.message === 'Failed to fetch') {
+      status.textContent = '⚡ Live tribunal is sleeping — browse past sessions below with real on-chain proofs';
+    } else {
+      status.textContent = `Error: ${e.message}`;
+    }
   }
 
   stepTimers.forEach(clearTimeout);
