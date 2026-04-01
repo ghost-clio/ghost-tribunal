@@ -175,9 +175,11 @@ async function submitToken() {
 
   const agentSteps = [
     { delay: 3000, text: '🛡️ The Sentinel is scanning for risks...' },
-    { delay: 7000, text: '🔮 The Oracle reads the narrative...' },
-    { delay: 11000, text: '📊 The Quant crunches the numbers...' },
-    { delay: 15000, text: '👻 Tallying votes...' },
+    { delay: 8000, text: '🔮 The Oracle reads the narrative...' },
+    { delay: 15000, text: '📊 The Quant crunches the numbers...' },
+    { delay: 22000, text: '👻 Agents are debating...' },
+    { delay: 30000, text: '⚖️ Reaching consensus...' },
+    { delay: 40000, text: '📝 Writing verdicts...' },
   ];
   const stepTimers = agentSteps.map(s =>
     setTimeout(() => { if (btn.disabled) status.textContent = s.text; }, s.delay)
@@ -192,7 +194,7 @@ async function submitToken() {
     if (connectedWallet) payload.wallet = connectedWallet;
 
     const controller = new AbortController();
-    const timeout = setTimeout(() => controller.abort(), 20000);
+    const timeout = setTimeout(() => controller.abort(), 55000);
     const resp = await fetch(TRIBUNAL_API, {
       method: 'POST',
       headers: {
